@@ -61,13 +61,18 @@ void Authorization::reg(std::fstream *fs)
 	char s = '\n';
 
 	if(!fs->is_open()) {
+		std::cout << "File opened\n";
 		fs->open("logpass.txt", std::fstream::in | std::fstream::out);
 	}
 	std::cout << "Login and password contains only latin letters and numbers" << std::endl;
 	std::cout << "Login:" << std::endl;
 	std::cin >> log;
 	Check::login_reg(&log);
-	//Check::login_exists(&log, fs):
+	while(Check::login_exists(&log, fs)) {
+		std::cout << "This name is already in use\n";
+		std::cout << "Login:\n";
+		std::cin >> log;
+	}
 	while(!pass_fl) {
 		std::cout << "Password:" << std::endl;
 		std::cin >> pass;
@@ -123,8 +128,31 @@ void Check::pass_reg(std::string *pass)
 	}
 }
 
-int Check::login_exists(const std::string *log, const std::fstream *fs)
+int Check::login_exists(const std::string *log, std::fstream *fs)
 {
+	int read_log = 1, i = 0;
+	char sym[1], login_comp[32];
+
+	fs->read(sym, 1);
+	while(!fs->eof()) {
+		if((sym[0] != '\n')&&(read_log)) {
+			login_comp[i] = sym[0];
+			i++;
+			login_comp[i] = 0;
+		} else if((sym[0] == '\n')&&(read_log)) {
+			std::string str_tmp(login_comp, i);
+			if(!log->compare(0, i, str_tmp)) {
+				//std::cout << "compare" << '\n';
+				return 1;
+			}
+			//std::cout << "comp1 i = " << i << '\n';
+			read_log = 0;
+			i = 0;
+		} else if((sym[0] == '\n')&&(!read_log)) {
+			read_log = 1;
+		}
+		fs->read(sym, 1);
+	}
 	return 0;
 }
 
