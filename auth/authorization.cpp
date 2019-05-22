@@ -45,10 +45,10 @@ void Authorization::login(std::fstream *fs)
 	}
 	std::cout << "Login:" << std::endl;
 	std::cin >> log;
-	//Check::login_log(log, fs);
+	Check::login_log(&log, fs);
 	std::cout << "Password:" << std::endl;
 	std::cin >> pass;
-	//Check::pass_error_log(pass, fs);
+	Check::pass_log(&pass, fs);
 }
 
 void Authorization::reg(std::fstream *fs)
@@ -96,6 +96,7 @@ void Authorization::reg(std::fstream *fs)
 	fs->write(tmp_buf_pass, pass.size());
 	fs->write(&s, sizeof(s));
 	fs->close();
+	//create file "login"
 }
 
 void Check::login_reg(std::string *log)
@@ -156,38 +157,73 @@ int Check::login_exists(const std::string *log, std::fstream *fs)
 	return 0;
 }
 
-/*void Check::login_log(std::string log, std::fstream fs)
+void Check::login_log(std::string *log, std::fstream *fs)
 {
 	char buffer[255];
 	char sym;
-	std::string login;
-	int i = 0, log_read = 1, login_found = 0;
+	//std::string login;
+	int i = 0, log_read = 1;
 
-	while(std::eof != fs.read(sym, sizeof(char))) {
+	//fs->seekg(0, fs->beg);
+	while(fs->read(&sym, sizeof(char))) {
+		//std::cout << sym << std::endl;
 		if((sym != '\n')&&(log_read)) {
 			buffer[i] = sym;
-			i++:
+			i++;
 		} else if((sym == '\n')&&(!log_read)) {
 			log_read = 1;
 		} else if((sym == '\n')&&(log_read)) {
 			buffer[i] = 0;
-			if(!log.compare(0, i, buffer)) {
+			//std::cout << buffer;
+			if(!log->compare(0, i, buffer)) {
 				std::cout << "equal" << std::endl; 
 				return;
 			}
 			i = 0;
-		} else {
 			log_read = 0;
 		}
 	}
 
 	std::cout << "Incorrect login:" << std::endl;
 	std::cout << "Login:" << std::endl;
-	std::cin >> login;
-	fs.seekg(0, fs.beg);
-	Check::login_log(login, fs);
+	std::cin >> *log;
+	fs->close();
+	fs->open("logpass.txt", std::fstream::in | std::fstream::out);
+	Check::login_log(log, fs);
 }
-*/
+
+void Check::pass_log(std::string *pass, std::fstream *fs)
+{
+	char buffer[255];
+	char sym;
+	int i = 0, pass_read = 0;
+
+	while(fs->read(&sym, sizeof(char))) {
+		//std::cout << sym << std::endl;
+		if((sym != '\n')&&(pass_read)) {
+			buffer[i] = sym;
+			i++;
+		} else if((sym == '\n')&&(!pass_read)) {
+			pass_read = 1;
+		} else if((sym == '\n')&&(pass_read)) {
+			buffer[i] = 0;
+			if(!pass->compare(0, i, buffer)) {
+				std::cout << "equal" << std::endl;
+				return;
+			}
+			i = 0;
+			pass_read = 0;
+		}
+	}
+
+	std::cout << "Incorrect password:" << std::endl;
+	std::cout << "Password:" << std::endl;
+	std::cin >> *pass;
+	fs->close();
+	fs->open("logpass.txt", std::fstream::in | std::fstream::out);
+	Check::pass_log(pass, fs);
+}
+
 void Check::pass_error_log(std::string *pass)
 {
 //	char buffer[255];

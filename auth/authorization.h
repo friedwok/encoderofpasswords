@@ -15,10 +15,11 @@ public:
 
 class Check {
 public:
-	//static void login_log(std::string log);
+	static void login_log(std::string *log, std::fstream *fs);
 	static void pass_error_log(std::string *pass);
 	static void login_reg(std::string *log);
 	static void pass_reg(std::string *pass);
+	static void pass_log(std::string *pass, std::fstream *fs);
 	static int login_exists(const std::string *log, std::fstream *fs);
 	//static void pass_error_reg(std::string pass);
 	static int checksym(std::string *str);
