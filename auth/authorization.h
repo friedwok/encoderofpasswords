@@ -4,13 +4,16 @@
 #include<fstream>
 #include<iostream>
 #include<string>
+#include "encoder.h"
+
+extern Encoder enc;
+char* string_to_char(std::string *str);
 
 class Authorization {
 public:
-	static void start();
-	static void login(std::fstream *fs);
-	//static void login_error(std::string log_in);
-	static void reg(std::fstream *fs);
+	static char* start();
+	static void login(std::fstream *fs, char **login);
+	static void reg(std::fstream *fs, char **login);
 };
 
 class Check {
